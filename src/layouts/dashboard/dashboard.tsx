@@ -10,6 +10,7 @@ interface Function {
   validar: Boolean;
   baixarModelo: any;
   dadosPlanilha: Array<any>;
+  load:Boolean
 }
 
 export const Dashboard: React.FC<Function> = ({
@@ -22,9 +23,10 @@ export const Dashboard: React.FC<Function> = ({
   validar,
   baixarModelo,
   dadosPlanilha,
+  load
 }) => {
   const [dados, setDados] = useState(Array<any>);
-  const [load, setLoad] = useState(false);
+  
 
   useEffect(() => {
     let teste: Array<any> = [];
@@ -37,28 +39,34 @@ export const Dashboard: React.FC<Function> = ({
 
     setDados(teste);
 
-    let resultado:Array<object> = []
+    if (result.length !== 0) {
+      const novoArray = result.map((objeto) => ({
+        code: parseInt(objeto.product_code),
+        new_price: objeto.new_price,
+      }));
 
-    
-      teste.forEach((e,i) => {
-        
-        let productCode:number =teste[i].product_code
-        let Code:number = result[i].code
+      let concac = novoArray.concat(teste);
 
-        if(productCode == Code){
-          let concac = Object.assign({}, teste[i], result[i]);
-          resultado.push(concac)
+      const objetoUnificado: any = {};
+
+      for (const objeto of concac) {
+        const id = objeto.code;
+        if (!objetoUnificado[id]) {
+          objetoUnificado[id] = { ...objeto };
+        } else {
+          // Se já existe um objeto com o mesmo ID, combine-o
+          objetoUnificado[id] = { ...objetoUnificado[id], ...objeto };
         }
-        setDados(resultado);
-        setLoad(true);
-        console.log(resultado)
-      })
-    
-   
-     
-    
+      }
 
-  }, [dadosPlanilha, result, requisicao]);
+      const resultado = Object.values(objetoUnificado);
+
+      console.log(resultado);
+
+      setDados(resultado);
+     
+    }
+  }, [dadosPlanilha, result, requisicao,validar,load]);
 
   return (
     <Fragment>

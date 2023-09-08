@@ -14,6 +14,7 @@ function App() {
   const [messageSucess,setMessageSuccess] = useState(Array<Object>)
   const [validar,setValidar] = useState(false)
   const [dadosPlanilha,setPlanilha] = useState(Array<any>)
+  const [load,setLoad] = useState(false)
   
   async function requisicao(){
     
@@ -44,17 +45,22 @@ function App() {
    
   }
   async function enviar(){
+  
     if(send == true){
       await axios.post('http://localhost:8000/',result).then((success) => {
-
+       
         if((success.data).erro){
           setMessage((success.data).erro)
           return
         } else {
           setMessageSuccess([{success:'Produtos validados com sucesso'}])
-          setValidar(true)
-        }
+          setTimeout(() => {
+            setLoad(true)
+          }, 2000);
       
+         //setLoad(true)
+        }
+       
       })
     }
   }
@@ -110,7 +116,7 @@ function App() {
     <>
       <Header />
       <div className="container">
-        <Dashboard requisicao={requisicao} enviar={enviar} result={result} message={message} success={messageSucess} atualizar={atualizar} validar={validar} baixarModelo={baixarModelo} dadosPlanilha={dadosPlanilha}/>
+        <Dashboard requisicao={requisicao} enviar={enviar} result={result} message={message} success={messageSucess} atualizar={atualizar} validar={validar} baixarModelo={baixarModelo} dadosPlanilha={dadosPlanilha} load={load}/>
       </div>
     </>
   )
